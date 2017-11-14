@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include "entity.cpp"
 
 using namespace std;
 using namespace sf;
@@ -13,12 +14,15 @@ public:
 
 private:
   RenderWindow ventana;
+  Entity asd;
 
 };
 
 Game::Game()
 {
     ventana.create(VideoMode(800,600),"GAME",Style::Close);
+    ventana.setVerticalSyncEnabled(true);
+    ventana.setFramerateLimit(30);
 }
 
 void Game::run()
@@ -32,7 +36,8 @@ void Game::run()
       if(eventGame.type == Event::Closed)
         ventana.close();
     }
-    ventana.clear();
+    ventana.clear(Color::Red);
+    asd.draw(ventana);
     ventana.display();
 
   }
