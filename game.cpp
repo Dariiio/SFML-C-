@@ -23,7 +23,8 @@ private:
   void handlePlayerInput(Keyboard::Key key, bool isPressed);
 
   RenderWindow ventana;
-  CircleShape mPlayer;
+  Texture mTexture;
+  Sprite mPlayer;
 
   bool mIsMovingUp, mIsMovingDown, mIsMovingLeft, mIsMovingRight;
 
@@ -37,9 +38,12 @@ Game::Game(): ventana(VideoMode(800,600),"GAME",Style::Close)
     ventana.setVerticalSyncEnabled(true);
     ventana.setFramerateLimit(60);
     
-    mPlayer.setRadius(40.f);
+    if(!mTexture.loadFromFile("Media/Textures/player.png")){
+
+    }
+    mPlayer.setTexture(mTexture);
     mPlayer.setPosition(100.f, 100.f);
-    mPlayer.setFillColor(Color::Cyan);
+
 }
 
 void Game::run()
