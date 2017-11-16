@@ -1,6 +1,5 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include "entity.cpp"
 
 using namespace std;
 using namespace sf;
@@ -8,37 +7,108 @@ using namespace sf;
 class Game
 {
 public:
+
   Game();
 
   void run();
 
 private:
+
+  static const float PlayerSpeed;
+  static const Time TimePerFrame;
+
+  void processEvents();
+  void update(Time deltaTime);
+  void render();
+  void handlePlayerInput(Keyboard::Key key, bool isPressed);
+
   RenderWindow ventana;
-  Entity asd;
+  CircleShape mPlayer;
+
+  bool mIsMovingUp, mIsMovingDown, mIsMovingLeft, mIsMovingRight;
 
 };
 
-Game::Game()
+const float Game::PlayerSpeed = 100.f;
+const Time Game::TimePerFrame = seconds(1.f/60.f);
+
+Game::Game(): ventana(VideoMode(800,600),"GAME",Style::Close)
 {
-    ventana.create(VideoMode(800,600),"GAME",Style::Close);
     ventana.setVerticalSyncEnabled(true);
-    ventana.setFramerateLimit(30);
+    ventana.setFramerateLimit(60);
+    
+    mPlayer.setRadius(40.f);
+    mPlayer.setPosition(100.f, 100.f);
+    mPlayer.setFillColor(Color::Cyan);
 }
 
 void Game::run()
 {
-  Event eventGame;
 
+  Clock clock;
+  Time timeSinceLastUpdate = Time::Zero;
   while(ventana.isOpen())
   {
-    while(ventana.pollEvent(eventGame))
-    {
-      if(eventGame.type == Event::Closed)
-        ventana.close();
+    timeSinceLastUpdate += clock.restart();
+    while( timeSinceLastUpdate > TimePerFrame){
+      timeSinceLastUpdate -= TimePerFrame;
+      processEvents();
+      update(TimePerFrame);
     }
-    ventana.clear(Color::Red);
-    asd.draw(ventana);
-    ventana.display();
-
+    render();
   }
+}
+
+void Game::processEvents()
+{
+  Event event;
+  while(ventana.pollEvent(event))
+  {
+    switch(event.type){
+      case Event::KeyPressed:
+        handlePlayerInput(event.key.code, true);
+        break;
+      case Event::KeyReleased:
+        handlePlayerInput(event.key.code, false);
+        break;
+      case Event::Closed:
+        ventana.close();
+        break;
+    }
+  }
+}
+
+void Game::update(Time deltaTime)
+{
+  Vector2f movement(0.f, 0.f);
+  if(mIsMovingUp)
+    movement.y -= PlayerSpeed;
+  if(mIsMovingDown)
+    movement.y += PlayerSpeed;
+  if(mIsMovingLeft)
+    movement.x -= PlayerSpeed;
+  if(mIsMovingRight)
+    movement.x += PlayerSpeed;
+
+  mPlayer.move(movement * deltaTime.asSeconds());
+
+}
+
+void Game::render()
+{
+  ventana.clear();
+  ventana.draw(mPlayer);
+  ventana.display();
+}
+
+void Game::handlePlayerInput(Keyboard::Key key, bool isPressed)
+{
+  if(key == Keyboard::W)
+    mIsMovingUp = isPressed;
+  if(key == Keyboard::S)
+    mIsMovingDown = isPressed;
+  if(key == Keyboard::A)
+    mIsMovingLeft = isPressed;
+  if(key == Keyboard::D)
+    mIsMovingRight = isPressed;
 }

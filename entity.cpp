@@ -24,6 +24,5 @@ Entity::Entity()
 
 void Entity::draw(RenderWindow &ventana)
 {
-  ventana.draw(circle);
-  circle.setPosition(40,100);
+  
 }
